@@ -12,12 +12,12 @@ function App() {
   const [totalPages, setTotalPages] = useState(0)
   const [loader, setLoader] = useState(false)
   const [errorMessage, setErrorMessage] = useState('');
-  const ref =useRef()
+  const ref = useRef()
 
   function searchBook() {
     setErrorMessage('');
     setLoader(true)
-    if(loader='false'){
+    if (!loader) {
       if (bookName !== '') {
         fetch(`http://openlibrary.org/search.json?q=${bookName}&page=`)
           .then(response => response.json())
@@ -43,19 +43,23 @@ function App() {
         setErrorMessage('Input can\'t be empty');
       }
     }
-    
+
   }
-  function handleKeyUp(event){
-    if (event.keyCode === 13) { 
-        searchBook() 
-    }
+
+  function handleKeyUp(event) {
+      if (event.keyCode === 13) {
+        searchBook()
+      }
   }
   useEffect(() => {
-    window.addEventListener("keyup", handleKeyUp);
+    if (!loader) {
+      window.addEventListener("keyup", handleKeyUp);
+    }
     return () => {
       window.removeEventListener("keyup", handleKeyUp);
-    };
-  }, [bookName]);
+    }
+  }, [bookName, loader]);
+
 
   function changePages(currentPage) {
     setErrorMessage('');
@@ -74,25 +78,25 @@ function App() {
   }
 
   useEffect(() => {
-    if(errorMessage!==''){
-       setTimeout(() => {
-   
-      setErrorMessage('')
-    }, "5000")
+    if (errorMessage !== '') {
+      setTimeout(() => {
+
+        setErrorMessage('')
+      }, "5000")
     }
-   
+
   }, [errorMessage])
-  
+
 
   return (
     <div>
       <div className="search-container">
         <input
           type="text" placeholder="Search.." id="input"
-          onChange={(e) => setBookName(e.target.value)} 
-          onKeyDown={handleKeyUp} 
-           ref={ref}
-          />
+          onChange={(e) => setBookName(e.target.value)}
+          onKeyDown={handleKeyUp}
+          ref={ref}
+        />
         <button onClick={searchBook} id="btn" ><i className="fas fa-search"></i></button>
       </div>
       {errorMessage && <Error message={errorMessage} />}
@@ -107,7 +111,7 @@ function App() {
                 color='#153ef5'
                 ariaLabel="loading"
                 wrapperStyle
-                
+
               />
             </div>
             : (<div className='bookNames'>
@@ -120,7 +124,7 @@ function App() {
               )}
             </div>))
         }
-        {books.length ? 
+        {books.length ?
           <ReactPaginate
             activeClassName={'item active'}
             breakClassName={'item break-me '}
